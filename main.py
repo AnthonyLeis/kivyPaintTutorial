@@ -22,7 +22,10 @@ class PaintWidget(Widget):
 
     def on_touch_move(self, touch):
         with self.canvas:
-            touch.ud['line'].points += [touch.x, touch.y]
+                try:
+                    touch.ud['line'].points += [touch.x, touch.y]
+                finally:
+                    return
 
 class MyToggleButton(ToggleButton):
     def on_press(self):
@@ -30,6 +33,13 @@ class MyToggleButton(ToggleButton):
 
     def setup(self, color):
         self.colorData = color
+
+class MySlider(Slider):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def on_touch_up(self, touch):
+        self.parent.setLineWidth(self.value)
 
 class WrapperWidget(Widget):
     def __init__(self):
@@ -49,6 +59,7 @@ class WrapperWidget(Widget):
         for color in range(len(self.colors)):
             button = MyToggleButton(text=str(color), group="colors", pos=((color+1)*100,0), color=self.colors[color], background_color=self.colors[color])
             self.add_widget(button)
+        self.add_widget(MySlider(min=1, max=50, value=5, pos=(600,0), width="100sp", value_track=True, value_track_color=[1, .75, .5, 1]))
 
     def addColor(self, color):
         self.colors += [color]
